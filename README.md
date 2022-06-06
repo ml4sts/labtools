@@ -9,7 +9,7 @@ git clone https://github.com/ml4sts/labtools.git
 cd labtools
 pip install .
 ```
-## New member
+## New member (outdated)
 
 if you haven't yet cloned the lab site:
 ```
