@@ -16,7 +16,7 @@ def new_member(name, role):
     '''
     create a markdown file for a new lab member
 
-
+    .. deprecated
     '''
 
     # load the template
