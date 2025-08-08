@@ -20,16 +20,20 @@ on:
           - "5"
           - "6"
 
+
+
 jobs:
-  schedule-acounntability:
+  schedule-acountability:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.WORKFLOW }}
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.x'
 
@@ -49,9 +53,8 @@ jobs:
         with:
           branch: schedule-acc-${{ github.event.inputs.name }}
           title: "(Re)schedule Acc for ${{ github.event.inputs.name }}"
-          body: "creates or upddates the scheduled acountability for ${{ github.event.inputs.name }}"
-          commit-message: "chore: (re)schedule Acc for ${{ github.event.inputs.name }}"
-          labels: automation,acc
-          assignees: ${{ github.actor }}
+          body: "creates or updates the scheduled acountability for ${{ github.event.inputs.name }}"
+          commit-message: "(re)schedule Acc for ${{ github.event.inputs.name }}"
+          assignees: ${{ github.actor }},brownsarahm
 
           
