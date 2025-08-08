@@ -21,7 +21,7 @@ on:
           - "6"
 
 jobs:
-  schedule-lab-access:
+  schedule-acounntability:
     runs-on: ubuntu-latest
 
     steps:
@@ -35,10 +35,9 @@ jobs:
 
       - name: Install labtools
         run: |
-          python -m pip install --upgrade pip
-          pip install labtools
+          pip install git+http://github.com/ml4sts/labtools.git
 
-      - name: Run lab access schedule command
+      - name: Run lab accountability schedule command
         run: |
           lab acc schedule --name "${{ github.event.inputs.name }}" \
             --day-of-week "${{ github.event.inputs.day_of_week }}" \
@@ -48,7 +47,7 @@ jobs:
       - name: Create a pull request
         uses: peter-evans/create-pull-request@v5
         with:
-          branch: schedule-lab-access-${{ github.event.inputs.name }}
+          branch: schedule-acc-${{ github.event.inputs.name }}
           title: "(Re)schedule Acc for ${{ github.event.inputs.name }}"
           body: "creates or upddates the scheduled acountability for ${{ github.event.inputs.name }}"
           commit-message: "chore: (re)schedule Acc for ${{ github.event.inputs.name }}"

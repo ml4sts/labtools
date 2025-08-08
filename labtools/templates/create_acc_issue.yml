@@ -29,7 +29,7 @@ jobs:
       
       - name: Install labtools
         run: |
-          pip install git+http://github/com/ml4sts/labtools.git
+          pip install git+http://github.com/ml4sts/labtools.git
 
       - name: Get existing issues
         id: get-issues
