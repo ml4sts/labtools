@@ -12,6 +12,10 @@ setup(name='labtools',
       include_package_data = True,
       install_requires=[''],
       entry_points = {
-        'console_scripts': ['labnews=labtools.labnews:new_lab_news',
-                            'newmember=labtools.newmember:new_member']}
+        'console_scripts': ['lab=labtools.cli:lab',]}
      )
+
+
+
+            # 'labnews=labtools.labnews:new_lab_news',
+                            # 'newmember=labtools.newmember:new_member'

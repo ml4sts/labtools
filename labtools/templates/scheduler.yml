@@ -1,0 +1,58 @@
+name: Schedule Accountability Issues
+
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: "Enter your name"
+        required: true
+        type: string
+      day_of_week:
+        description: "Enter the day of the week (0 for Sunday, 6 for Saturday)"
+        required: true
+        type: choice
+        options:
+          - "0"
+          - "1"
+          - "2"
+          - "3"
+          - "4"
+          - "5"
+          - "6"
+
+jobs:
+  schedule-lab-access:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install labtools
+        run: |
+          python -m pip install --upgrade pip
+          pip install labtools
+
+      - name: Run lab access schedule command
+        run: |
+          lab acc schedule --name "${{ github.event.inputs.name }}" \
+            --day-of-week "${{ github.event.inputs.day_of_week }}" \
+            --username "${{ github.actor }}"
+
+
+      - name: Create a pull request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          branch: schedule-lab-access-${{ github.event.inputs.name }}
+          title: "(Re)schedule Acc for ${{ github.event.inputs.name }}"
+          body: "creates or upddates the scheduled acountability for ${{ github.event.inputs.name }}"
+          commit-message: "chore: (re)schedule Acc for ${{ github.event.inputs.name }}"
+          labels: automation,acc
+          assignees: ${{ github.actor }}
+
+          

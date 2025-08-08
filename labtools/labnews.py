@@ -1,7 +1,6 @@
 '''
 This module generates md files for lab news
 '''
-import click
 import os
 import pkg_resources as pkgrs
 from datetime import datetime
@@ -12,19 +11,9 @@ template_dir = 'templates'
 md_template_file = 'labnews.md'
 
 
-@click.command()
-@click.argument('slug', default=None)
-@click.option('--date', default='now', help='date of post')
-@click.option('--title', prompt='News title',
-              help='one line to display as headline of news post', default=None)
-@click.option('--inline', default='false')
-
-
-def new_lab_news(slug, date, title, inline):
+def create_new_lab_news(slug=None, date='now', title=None, inline='false'):
     '''
-    create a markdown file for a lab news item
-
-
+    Create a markdown file for a lab news item
     '''
     # set date to now if not provided
     if date == 'now':

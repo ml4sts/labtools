@@ -1,0 +1,45 @@
+name: Create Account Issue
+
+on:
+  schedule:
+    # Runs at 8:00 AM UTC every Monday
+    - cron: '20 8 * * {day_of_week}'
+  workflow_dispatch:
+    # Allows manual trigger
+
+jobs:
+  create-issue:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Setup GitHub CLI
+        uses: cli/cli-action@v2
+        with:
+          version: latest
+      
+      - name: Authenticate with GitHub CLI
+        run: |
+          echo "${secret_required}" | gh auth login --with-token
+      
+      - name: Install labtools
+        run: |
+          pip install git+http://github/com/ml4sts/labtools.git
+
+      - name: Get existing issues
+        id: get-issues
+        run: |
+          gh search issues --owner=ml4sts --assignee {username} --json url  --state=open \
+          -- -label:goals,log > open_issues.json
+          dates=$(lab acc dates)
+          gh search issues --owner=ml4sts --assignee {username} --json url  --updated "$dates" \
+          --state=closed -- -label:goals,log > closed_issues.json
+          
+          lab acc create  > issue_template.md
+                 
+          gh issue create --title "{name} $(date +"%Y-%m-%d")" --body-file issue_template.md --label "log" --assignee brownsarahm
