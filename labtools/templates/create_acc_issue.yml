@@ -29,7 +29,7 @@ jobs:
       - name: Get existing issues
         id: get-issues
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${secret_required}
         run: |
           gh search issues --owner=ml4sts --assignee {username} --json url  --state=open \
           -- -label:goals,log > open_issues.json
@@ -41,7 +41,7 @@ jobs:
       - name: Format content and create issue
         id: create-issue
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${secret_required}
         run: |
           lab acc create  > issue_template.md
                  
