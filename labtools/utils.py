@@ -1,6 +1,7 @@
 import pkg_resources as pkgrs
 import os
 import subprocess
+from importlib.resources import files
 
 def run(*args):
     return subprocess.check_call(['git'] + list(args))
@@ -13,9 +14,8 @@ def load_template_file(template_file):
     '''
     load a template file from the package's template dir
     '''
-    template_path_rel = os.path.join('templates', template_file)
-    template_path = pkgrs.resource_filename(__name__, template_path_rel)
-    with open(template_path, 'r') as tmpt_f:
+    template_path = os.path.join(files(__package__), 'templates', template_file)
+    with template_path.open('r') as tmpt_f:
         template = tmpt_f.read()
 
     return template
