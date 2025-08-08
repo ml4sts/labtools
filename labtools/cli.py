@@ -115,7 +115,7 @@ def schedule(username,name,day_of_week):
     '''
     create the action to schedule acc issues
     '''
-    secret_required = '{ secrets.GITHUB_TOKEN }'
+    secret_required = '{{ secrets.GITHUB_TOKEN }}'
     template = load_template_file('create_acc_issue.yml')
 
     action = template.format_map({'secret_required':secret_required,
