@@ -2,7 +2,7 @@
 This module generates md files for lab news
 '''
 import os
-import pkg_resources as pkgrs
+
 from datetime import datetime
 from .utils import load_template_file
 

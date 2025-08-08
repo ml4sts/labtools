@@ -2,7 +2,6 @@
 This module generates md files for lab news
 '''
 import click
-import yaml as yml
 from .utils import load_template_file
 
 
