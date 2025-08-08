@@ -2,7 +2,7 @@ name: Create Account Issue
 
 on:
   schedule:
-    # Runs at 8:00 AM UTC every Monday
+    # Runs at 8:20 AM UTC every 
     - cron: '20 8 * * {day_of_week}'
   workflow_dispatch:
     # Allows manual trigger
