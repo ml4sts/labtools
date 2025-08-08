@@ -93,11 +93,11 @@ def create(closed_issues_json,open_issues_json):
 
     
     closed_issues = json.load(closed_issues_json)
-    closed_checklist = issues_to_checklist(closed_issues)
+    closed_checklist = issues_to_checklist(closed_issues,open=False)
 
     
     open_issues = json.load(open_issues_json)
-    open_checklist = issues_to_checklist(open_issues,open=False)
+    open_checklist = issues_to_checklist(open_issues)
 
     # load the template from package
     md_template = load_template_file('accountability_issue.md')

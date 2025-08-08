@@ -1,4 +1,4 @@
-name: Create Account Issue
+name: Create Accountability Issue - {name}
 
 on:
   schedule:
@@ -16,12 +16,7 @@ jobs:
     
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
-      
-      - name: Setup GitHub CLI
-        uses: cli/cli-action@v2
-        with:
-          version: latest
+        uses: actions/checkout@v4
       
       - name: Authenticate with GitHub CLI
         run: |
