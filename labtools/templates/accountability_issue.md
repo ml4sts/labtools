@@ -23,10 +23,13 @@ in edit view:
 you can delete the whole instruction or move the visible part into this comment to hide it -->
 
 - [x] ### Waiting for Approval 
-- [x] ### Progress, but incomplete
 - [x] ### Stuck 
-- [x] ### Not Due
+- [x] ### Progress, but incomplete
+- [x] ### New Focus for next week
+- [x] ### Longer term work
 {open_checklist}
+
+<!-- add additional checkboxes for any upcoming tasks that do not yet have issues -->
 
 ## Challenges
 
