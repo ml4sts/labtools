@@ -1,4 +1,3 @@
-import pkg_resources as pkgrs
 import os
 import subprocess
 from importlib.resources import files
