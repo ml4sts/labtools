@@ -10,7 +10,7 @@ setup(name='labtools',
       packages=['labtools'],
       zip_safe=False,
       include_package_data = True,
-      install_requires=['click', 'pkg_resources', 'requests'],
+      install_requires=['click'],
       entry_points = {
         'console_scripts': ['lab=labtools.cli:lab',]}
      )
