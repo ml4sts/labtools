@@ -1,3 +1,10 @@
+# Weekly log
+
+- review your completed work
+- review your open issues, and follow instructions there
+- edit this comment to fill in the rest
+- switch assignee from yourself to `brownsarahm`
+
 ## Accomplishments
 
 <!-- feel free to add anything you want to this list -->
