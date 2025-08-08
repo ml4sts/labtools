@@ -7,7 +7,7 @@
 
 ## Open Issues 
 
-_in rendered view, sort the issues by status and drag the checked items to be subheadings, make sure that on each issue (except for ones that are known future) there is an update or a linked PR_
+_in rendered view, sort the issues by status and drag the checked items to be subheadings, make sure that on each issue (except for ones that are known future) there is an update or a linked PR. When organized, edit this issue._
 <!-- 
 in edit view:
 - edit the checked items to be headings (remove the `- [x] ` so that the `###` are the first few characters
@@ -21,7 +21,7 @@ you can delete the whole instruction or move the visible part into this comment 
 - [x] ### Not Due
 {open_checklist}
 
-## Challengs
+## Challenges
 
 <!-- 
 What challenges did you face since your last checkin
