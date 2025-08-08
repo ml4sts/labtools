@@ -9,38 +9,20 @@ git clone https://github.com/ml4sts/labtools.git
 cd labtools
 pip install .
 ```
-## New member (outdated)
 
-if you haven't yet cloned the lab site:
-```
-git clone https://github.com/ml4sts/ml4sts.github.io.git
-```
+## Current Features
 
-Once you have it, navigate to it and create a branch with your name in the place of add_name
-```
-cd ml4sts.github.io
-git checkout -b add_name
-```
-
-To create a your file
-```
-newmember 'first last' --role 'undergraduate researcher'
-```
-
-then edit the file named `first_last.md` to include your bio and add any links you want.
-
-When it's done
-
-```
-git add _members/
-git commit -m 'add <topic> post'
-git push
-```
-
-and then use the link in the response to make a pull request
+- work with accountability issues, try `lab acc --help` for docs
 
 
-## Adding a news post
+## Design 
+
+- provides the `lab` command with sub commands in groups
+- everything in here should allow us to make new/multiple repos for other functions (like accountability and reading groups)
+
+
+
+## Adding a news post (currently broken)
 
 if you haven't yet cloned the lab site:
 ```
