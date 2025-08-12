@@ -14,6 +14,8 @@ from .accountability import issues_to_checklist, generate_basic_acc_issue
 from .accountability import file_generator, load_and_fill_template
 from .accountability import initialize_accountability_repo, file_split
 
+from .articles import create_github_paper_issue
+
 @click.group()
 def lab():
     '''
@@ -175,4 +177,49 @@ def news(slug, date, title, inline):
 
     '''
     create_new_lab_news(slug, date, title, inline)
+
+
+
+# article scrapper tool
+
+@lab.group()
+def articles():
+    """Tools for scraping research articles and creating issues."""
+    pass
+
+
+@articles.command("issue")
+@click.option('-p', '--paper-url', required=True, help='Enter the paper URL (ACM or NeurIPS)')
+@click.option('-r', '--reason', default='', help='Why should we read this paper?')
+def articles_issue(paper_url, reason):
+    """Scrape ACM/NeurIPS and create an issue (no files saved)."""
+    try:
+        msg_or_url = create_github_paper_issue(
+            paper_url=paper_url,
+            reason=reason
+        )
+        click.echo(msg_or_url)
+    except Exception as e:
+        raise click.ClickException(str(e))
+
+@articles.command()
+@click.argument('path', default='.')
+
+def init(path):
+    """
+    Initialize an articles repo at PATH (default current dir)
+    """
+    # Create .github/workflows directory
+    os.makedirs(os.path.join(path, '.github', 'workflows'), exist_ok=True)
+
+    # Write workflow file from template
+    workflow_action = load_template_file('create_article_issue.yml')
+    workflow_path = os.path.join(path, '.github', 'workflows', 'create_article_issue.yml')
+    with open(workflow_path, 'w', encoding='utf-8') as f:
+        f.write(workflow_action)
+
+    # Add .gitignore
+    git_ignore = load_template_file('gitignore.txt')
+    with open(os.path.join(path, '.gitignore'), 'w', encoding='utf-8') as f:
+        f.write(git_ignore)
 
