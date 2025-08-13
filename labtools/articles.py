@@ -78,54 +78,50 @@ def scrape_neurips(url):
 
 
 # GitHub integration functions
-def create_github_issue(title, authors, abstract, pdf_link, reason):
-    """Create a GitHub issue using gh CLI"""
-    issue_title = f"Paper Review: {title}"
-    issue_body = (
-        f"**Authors:** {authors}\n\n"
-        f"**Abstract:**\n{abstract}\n\n"
-        f"[Read Full Paper]({pdf_link})\n\n"
-        f"**Why Read This?**\n{reason}"
-    )
-    
-    command = [
-        "gh", "issue", "create",
-        "--title", issue_title,
-        "--body", issue_body
-    ]
-    
-    env_vars = os.environ.copy()
-    env_vars["GH_TOKEN"] = os.getenv("GH_TOKEN", "")
-    
-    result = subprocess.run(command, env=env_vars, capture_output=True, text=True, check=True)
-    
-    if result.returncode == 0:
-        return True, "✅ Issue created successfully!"
-    else:
-        return False, f"❌ Failed to create issue. Error:\n{result.stderr}"
+def create_github_issue_raw(title: str, body: str, repo: str | None = None) -> tuple[bool, str]:
+    """
+    Create a GitHub issue using a pre-rendered Markdown body.
+    Returns (ok, message).
+    """
+    env = os.environ.copy()
+    env.setdefault("GH_TOKEN", os.getenv("GH_TOKEN") or os.getenv("GITHUB_TOKEN") or "")
+
+    cmd = ["gh", "issue", "create", "--title", title, "--body", body]
+    if repo:
+        cmd += ["--repo", repo]
+
+    res = subprocess.run(cmd, capture_output=True, text=True, env=env)
+    if res.returncode == 0:
+        return True, (res.stdout.strip() or "Issue created")
+    return False, (res.stderr.strip() or "Failed to create issue")
 
 
-def create_github_paper_issue(paper_url , reason):
-    """Create a GitHub issue for the specified paper URL with a reason."""
-    # If reason is not provided, prompt the user
-    if reason:
-        click.echo(f"Creating issue for paper: {paper_url} with reason: {reason}")
-    else:
-        click.echo(f"Creating issue for paper: {paper_url} without a specified reason.")
-    # Scrape paper details
+def create_github_paper_issue(paper_url: str, reason: str = "", body: str | None = None, repo: str | None = None) -> tuple[bool, str]:
+    """
+    Scrape paper info, optionally build a simple default body (if none provided),
+    and create the GitHub issue. Returns (ok, message).
+    Prefer passing a pre-rendered `body` from your CLI template.
+    """
     try:
         title, authors, abstract, pdf_link = paperinfos(paper_url)
-        print(f"🔍 Debug - Raw Authors: {authors}")  # Debugging line
-        if not title or not authors or not abstract or not pdf_link:
-            raise ValueError("Scraper returned empty fields.")
-        print(f"🔍 Debug - Title: {title}")
-        print(f"🔍 Debug - Authors: {authors}")  # Should be a list
-        print(f"🔍 Debug - Abstract: {abstract}")
-        print(f"🔍 Debug - PDF Link: {pdf_link}")
-    except Exception as e: 
-        print(f"❌ Error scraping paper info: {e}") 
-        return
-# Create GitHub Issue with scraped details
-    create_github_issue(title, authors, abstract, pdf_link, reason)
-if __name__ == "__main__":
-    create_github_paper_issue()
+    except Exception as e:
+        raise click.ClickException(f"Error scraping paper: {e}")
+
+    # Normalize authors for display
+    if isinstance(authors, list):
+        authors_str = ", ".join(a.strip() for a in authors if a and str(a).strip())
+    else:
+        authors_str = str(authors).strip()
+
+    # If no pre-rendered body was supplied (e.g., from a template), use a minimal default
+    if body is None:
+        body = (
+            f"**Link to paper**\n{paper_url}\n\n"
+            f"**Authors**\n{authors_str}\n\n"
+            f"**Abstract**\n{abstract}\n\n"
+            f"**Why should we read this?**\n{reason or '[add reason]'}\n"
+            f"**PDF**\n{pdf_link}\n"
+        )
+
+    issue_title = f"Paper to read: {title}"
+    return create_github_issue_raw(issue_title, body, repo=repo)
