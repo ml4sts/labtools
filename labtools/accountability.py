@@ -172,7 +172,6 @@ def load_and_fill_template(template_file, data_dict):
             data_dict[key] = ''
 
     # merge data with the template
-    print(f'Filling template {template_file} with data: {data_dict}')
     md_issue = md_template.format_map(data_dict)
     return md_issue
 
