@@ -1,10 +1,12 @@
+# TEMPLATE NOTE: this file will be written without further modification and
+# TEMPLATE NOTE: must be valid yaml (only these notes will be removed)
 name: Schedule Accountability Issues
 
 on:
   workflow_dispatch:
     inputs:
       name:
-        description: "Enter your name"
+        description: "Enter your name as you want it to appear in the issue"
         required: true
         type: string
       day_of_week:
@@ -33,7 +35,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.WORKFLOW }}
+          token: ${{ secrets.WORKFLOW_EDITING_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -52,12 +54,16 @@ jobs:
 
 
       - name: Create a pull request
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v7
         with:
           branch: schedule-acc-${{ github.event.inputs.name }}
-          title: "(Re)schedule Acc for ${{ github.event.inputs.name }}"
-          body: "creates or updates the scheduled acountability for ${{ github.event.inputs.name }}"
+          title: "(Re)schedule Accountability Checkins for ${{ github.event.inputs.name }}"
+          body: |
+            creates or updates the scheduled acountability for ${{ github.event.inputs.name }}
+
+            PR is for review, but if not debugging labtools, it can be merged by anyone
           commit-message: "(re)schedule Acc for ${{ github.event.inputs.name }}"
           assignees: ${{ github.actor }},brownsarahm
+          token: ${{ secrets.WORKFLOW_EDITING_TOKEN }}
 
           

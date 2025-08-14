@@ -1,11 +1,19 @@
+# TEMPLATE NOTE: this is a template that will be filled via python,
+# TEMPLATE NOTE:  {} can only be used ways that are valid for python
 name: Create Accountability Issue - {name}
 
 on:
-  schedule:
+   schedule:
     # Runs at 8:20 AM UTC every 
     - cron: '20 8 * * {day_of_week}'
-  workflow_dispatch:
+   workflow_dispatch:
     # Allows manual trigger
+    inputs:
+      days:
+        description: 'Number of days to look back'
+        required: true
+        default: '7'
+        type: string
 
 
 
@@ -20,28 +28,37 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-  
+
+      - name: Set duration
+        id: set-duration
+        run: |
+          
       
       - name: Install labtools
         run: |
           pip install git+http://github.com/ml4sts/labtools.git
 
+
+
       - name: Get existing issues
         id: get-issues
         env:
-          GH_TOKEN: ${secret_required}
+          GH_TOKEN: ${SECRET_LAB_REPO_ISSUES}
         run: |
-          gh search issues --owner=ml4sts --assignee {username} --json url  --state=open \
-          -- -label:goals,log > open_issues.json
-          dates=$(lab acc dates)
-          gh search issues --owner=ml4sts --assignee {username} --json url  --updated "$dates" \
-          --state=closed -- -label:goals,log > closed_issues.json
+          if [ "${{{ github.event_name }}}" = "workflow_dispatch" ]; then
+            DURATION=${{{ github.event.inputs.days }}} 
+          else
+            DURATION=7
+          fi
+          {open_issues}
+          dates=$(lab acc dates -d $DURATION)
+          {closed_issues}
           
           
       - name: Format content and create issue
         id: create-issue
         env:
-          GH_TOKEN: ${secret_required}
+          GH_TOKEN: ${SECRET_BASIC}
         run: |
           lab acc create  > issue_template.md
                  

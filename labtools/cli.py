@@ -1,11 +1,18 @@
+'''
+This should be the CLI as minimal as possible; most functionality should be in 
+the other modules.
+'''
+
 import click
 import os
 import json 
 from .utils import load_template_file
 
 from .labnews import create_new_lab_news
-from .accountability import get_date_range
-from .accountability import issues_to_checklist
+from .accountability import get_date_range, parse_template, generate_schedule_action
+from .accountability import issues_to_checklist, generate_basic_acc_issue
+from .accountability import file_generator, load_and_fill_template
+from .accountability import initialize_accountability_repo, file_split
 
 @click.group()
 def lab():
@@ -27,46 +34,85 @@ def init(path):
     '''
     Initialize a lab accountability repo, at PATH (default current dir)
     '''
-    # write the scheduleer.yml to .github/workflows
-    os.makedirs(os.path.join(path,'.github','workflows'),exist_ok=True)
-    # write the template for issues to .github/ISSUE_TEMPLATE
-    os.makedirs(os.path.join(path,'.github','ISSUE_TEMPLATE'),exist_ok=True)
-    
-      
-    scheduler_action = load_template_file('scheduler.yml')
-    # write the scheduler action to .github/workflows/scheduler.yml
-    out_path = os.path.join(path,'.github','workflows','scheduler.yml')
-    
-    with open(out_path,'w') as f:
-        f.write(scheduler_action) 
-
-    git_ignore = load_template_file('gitignore.txt')
-    with open(os.path.join(path,'.gitignore'),'w') as f:
-        f.write(git_ignore) 
-
-    
-
-
+    progress  = initialize_accountability_repo(path)
+    click.echo(f'Initialized accountability repo at {path} with the \
+               following changes:\n- {'\n- '.join(progress)}')
 
 
 @acc.command()
+@click.option('--template', default='accountability_issue.md',
+              help='template file to use for issue')
+@click.option('-u','--username', prompt='your github username',)
 
-def log():
+def log(template,username):
     '''
     Create the content for a lab accountability entry interactively
     '''
-    # prompt for entry info, open editor, save entry, git add and commit
+    # get template and reqs
+    if not template.endswith('.md'):
+        template += '.md'
+    md_template_out, text_feilds, file_feilds = parse_template(template)
+
+    
+    # prompt for file fields first
+    data_dict = {}
+    
+    # prompt for files first
+    data_dict = {'username':username,
+                 'dates':get_date_range(),}
+    
+    for field in file_feilds:
+        file_name = click.prompt(f'Path to {field.replace('_',' ')} json:', 
+                                 default='generate',
+                                 show_default=True)
+        if file_name == 'generate':
+            command = file_generator[field].format(**data_dict)
+            click.echo(f'Running command: {command}')
+            os.system(command)
+            file_name = command.split('>')[-1].strip()
+            file_path = os.path.join(os.getcwd(), file_name)
+        else:
+            file_path = file_name
+
+
+        # load json and convert to checklists
+        with open(file_path,'r') as f:
+            issues_json_dict = json.load(f)
+        
+        checklist_type = field.split('_')[0] == 'open'
+        out_feild = field.replace('issues','checklist')
+        checklist = issues_to_checklist(issues_json_dict, open=checklist_type)
+        # add the checklist to the data dict
+        # data_dict[out_feild] = checklist
+        text_feilds[out_feild] += checklist
+        # click.echo(f'{out_feild.replace('_',' ').title()}:\n')
+        # click.echo(checklist)
+
+
+    # prompt for text fields
+    for field, prompt in text_feilds.items():
+        prompt_reponse = click.edit(prompt,editor='nano')
+        # response = prompt_reponse.replace(prompt,'').strip()
+        _, response = prompt_reponse.split(file_split,1)
+        data_dict[field] = response
+       
+
+    md_issue = load_and_fill_template(md_template_out, data_dict)    
+    click.echo(md_issue)
 
 
 @acc.command()
-@click.option('-d','--reference-date', default=None,
+@click.option('-r','--reference-date', default=None,
               help='reference date for date range (ISO format|YYYY-MM-DD) otherwise today')
-def dates(reference_date=None):
+@click.option('-d','--duration', default=7, type=int,
+              help='number of days to look back from reference date')
+def dates(reference_date, duration):
     '''
-    get date range for accountability entry
+    Get the date range for the accountability entry
     '''
-    date_range = get_date_range(reference_date)
+    date_range = get_date_range(reference_date, duration)
     click.echo(date_range)
+
 
 @acc.command()
 @click.argument('file', default=None,)
@@ -87,40 +133,23 @@ def checklist(file):
               type =click.File('r'))
 def create(closed_issues_json,open_issues_json):
     '''
-    create a markdown file for a lab accountability entry
+    create a markdown contents for a lab accountability issue
     '''
     # create the markdown file from template filled with checklists
-
-    
-    closed_issues = json.load(closed_issues_json)
-    closed_checklist = issues_to_checklist(closed_issues,open=False)
-
-    
-    open_issues = json.load(open_issues_json)
-    open_checklist = issues_to_checklist(open_issues)
-
-    # load the template from package
-    md_template = load_template_file('accountability_issue.md')
-
-    md_issue = md_template.format_map({'closed_checklist':closed_checklist,
-                                     'open_checklist':open_checklist})
+ 
+    md_issue = generate_basic_acc_issue(closed_issues_json,open_issues_json)    
     click.echo(md_issue)
 
 
 @acc.command()
 @click.option('--name', prompt='your name',)
 @click.option('--username', prompt='your github username',)
-@click.option('-d','--day-of-week', prompt='day of week to run (0=Mon, 6=Sun)',type=int)
-def schedule(username,name,day_of_week):
+@click.option('-w','--day-of-week', prompt='day of week to run (1=Mon, 5=Fri)',type=int)
+def schedule(username,name,day_of_week,duratation):
     '''
     create the action to schedule acc issues
     '''
-    secret_required = '{{ secrets.GITHUB_TOKEN }}'
-    template = load_template_file('create_acc_issue.yml')
-
-    action = template.format_map({'secret_required':secret_required,
-                                  'username':username, 'name':name, 
-                                  'day_of_week':day_of_week})
+    action = generate_schedule_action(username,name,day_of_week)
     with open(f'.github/workflows/scheduled_acc_{username}.yml','w') as f:
         f.write(action)
     

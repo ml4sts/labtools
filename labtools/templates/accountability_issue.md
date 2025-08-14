@@ -1,3 +1,5 @@
+# TEMPLATE NOTE: this is a template that will be filled via python,
+# TEMPLATE NOTE:  {} can only be used ways that are valid for python
 # Weekly log
 
 - review your completed work
@@ -7,9 +9,15 @@
 
 ## Accomplishments
 
-<!-- feel free to add anything you want to this list -->
+### Closed Issues
+<!-- review the issues you closed this week -->
 
-{closed_checklist}
+{closed_issues:file}
+
+### Additional Accomplishments
+<!-- add any additional completed tasks or things you want to highlight about those issues -->
+
+{accomplishments}
 
 
 ## Open Issues 
@@ -27,26 +35,31 @@ you can delete the whole instruction or move the visible part into this comment 
 - [x] ### Progress, but incomplete
 - [x] ### New Focus for next week
 - [x] ### Longer term work
-{open_checklist}
+
+{open_issues:file}
 
 <!-- add additional checkboxes for any upcoming tasks that do not yet have issues -->
+{future_work}
 
 ## Challenges
 
 <!-- 
-What challenges did you face since your last checkin
+What challenges did you face since your last checkin?
 a bulleted list or paragraph is fine, link to issues on projects if appropriate -->
 
+{challenges}
 
 ## Help Needed
 
 <!-- what help do you need and from who?  -->
-
+ {help_needed}
 
 ## Questions
 
-<!-- formatting like this makes them easy to copy and repy to in a comment; if none you can delete, add as needed-->
+<!-- what questions do you have for your next checkin meeting -->
+
 ```
-- *question1 here*:
-- *question2 here*:
+{questions}
 ```
+
+<!-- putting them in a code block like this makes them easy to copy and repy to in a comment; if none you can delete-->

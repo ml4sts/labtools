@@ -1,2 +1,6 @@
+# TEMPLATE NOTE: this file will be written without further modification and
+# TEMPLATE NOTE: should be valid as a .gitignore but has to have a different 
+# TEMPLATE NOTE: exension in the package to make it work. 
+
 *.json
 issue_template.md
