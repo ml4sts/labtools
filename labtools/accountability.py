@@ -163,6 +163,7 @@ def load_and_fill_template(template_file, data_dict):
         md_template = template_file
     else:
         md_template = load_template_file(template_file)
+        md_template, _ ,_ = parse_template(md_template)
 
     # fill not provided values with defult values 
     formatter = string.Formatter()
@@ -171,6 +172,7 @@ def load_and_fill_template(template_file, data_dict):
             data_dict[key] = ''
 
     # merge data with the template
+    print(f'Filling template {template_file} with data: {data_dict}')
     md_issue = md_template.format_map(data_dict)
     return md_issue
 
