@@ -209,10 +209,7 @@ def articles_issue(paper_url, reason):
         reason=reason,
         abstract_quoted=abstract_quoted,
         )
-    
-    # Title
     issue_title = f"Paper to read: {title}"
-    
     ok, msg = create_github_issue_raw(
     title=f"Paper to read: {title}",
     body=issue_body,
@@ -249,4 +246,3 @@ def init(path):
     git_ignore = load_template_file('gitignore.txt')
     with open(os.path.join(path, '.gitignore'), 'w', encoding='utf-8') as f:
         f.write(git_ignore)
-

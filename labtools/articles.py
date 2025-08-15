@@ -8,6 +8,7 @@ from datetime import datetime
 import click
 
 
+# scraper functions 
 def paperinfos(url):
     if "https://arxiv.org/html" in url:
         return scrape_arxviv(url)
