@@ -37,8 +37,8 @@ def init(path):
     Initialize a lab accountability repo, at PATH (default current dir)
     '''
     progress  = initialize_accountability_repo(path)
-    click.echo(f'Initialized accountability repo at {path} with the \
-               following changes:\n- {'\n- '.join(progress)}')
+    click.echo(f"Initialized accountability repo at {path} with the \
+               following changes:\n- " + '\n- '.join(progress))
 
 
 @acc.command()
