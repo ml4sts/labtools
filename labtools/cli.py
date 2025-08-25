@@ -97,7 +97,13 @@ def log(template,username):
         data_dict[field] = response
        
 
-    md_issue = load_and_fill_template(md_template_out, data_dict)    
+    md_issue = load_and_fill_template(md_template_out, data_dict)
+
+    out_format = click.prompt('Choose output format',
+                              type=click.Choice(['md','stdout','gh']),  
+                              default='stdout',
+                              show_default=True) 
+    
     click.echo(md_issue)
 
 
@@ -145,7 +151,7 @@ def create(closed_issues_json,open_issues_json):
 @click.option('--name', prompt='your name',)
 @click.option('--username', prompt='your github username',)
 @click.option('-w','--day-of-week', prompt='day of week to run (1=Mon, 5=Fri)',type=int)
-def schedule(username,name,day_of_week,duratation):
+def schedule(username,name,day_of_week):
     '''
     create the action to schedule acc issues
     '''
