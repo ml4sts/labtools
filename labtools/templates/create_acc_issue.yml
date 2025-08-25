@@ -45,8 +45,8 @@ jobs:
         env:
           GH_TOKEN: ${SECRET_LAB_REPO_ISSUES}
         run: |
-          if [ "${{{ github.event_name }}}" = "workflow_dispatch" ]; then
-            DURATION=${{{ github.event.inputs.days }}} 
+          if [ "${event}" = "workflow_dispatch" ]; then
+            DURATION=${duration}
           else
             DURATION=7
           fi
