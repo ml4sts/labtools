@@ -285,7 +285,10 @@ def generate_schedule_action(username,name,day_of_week):
                     'SECRET_LAB_REPO_ISSUES':SECRET_LAB_REPO_ISSUES,
                     'SECRET_WORKFLOW_EDIT':SECRET_WORKFLOW_EDIT, 
                     'username':username, 'name':name,
-                    'day_of_week':day_of_week,}
+                    'day_of_week':day_of_week,
+                    'event':'{{ github.event_name }}',
+                    'duration':'{{ github.event.inputs.days }}'}
+    
     template_info.update(prefilled_scripts)
     action = template.format_map(template_info)
     return action
