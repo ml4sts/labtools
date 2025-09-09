@@ -37,8 +37,8 @@ def init(path):
     Initialize a lab accountability repo, at PATH (default current dir)
     '''
     progress  = initialize_accountability_repo(path)
-    click.echo(f"Initialized accountability repo at {path} with the \
-               following changes:\n- " + '\n- '.join(progress))
+    click.echo(f'Initialized accountability repo at {path} with the \
+               following changes:\n- {'\n- '.join(progress)}')
 
 
 @acc.command()
@@ -189,8 +189,8 @@ def articles():
 
 
 @articles.command("issue")
-@click.option('-p', '--paper-url', required=True, help='Enter the paper URL (ACM or NeurIPS)')
-@click.option('-r', '--reason', default='', help='Why should we read this paper?')
+@click.option('-p', '--paper-url', prompt="Enter the paper URL (ACM or NeurIPS)", help='Enter the paper URL (ACM or NeurIPS)')
+@click.option('-r', '--reason', prompt="Why should we read this paper?", default='', help='Why should we read this paper?')
 def articles_issue(paper_url, reason):
     """Scrape ACM/NeurIPS and create an issue in the reading-group repo."""
     
