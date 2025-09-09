@@ -10,7 +10,7 @@ setup(name='labtools',
       packages=['labtools'],
       zip_safe=False,
       include_package_data = True,
-      install_requires=['click','bs4'],
+      install_requires=['click','bs4','markdown-it-py'],
       entry_points = {
         'console_scripts': ['lab=labtools.cli:lab',]}
      )
