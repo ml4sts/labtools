@@ -32,20 +32,6 @@ def format_authors(authors_raw):
         ]
     return ", ".join(authors_list)
 
-# def scrape_arxviv(url):
-#     """Scrape data from the Arxviv website."""
-#     Arx_html = requests.get(url).content
-#     Arx_content = BeautifulSoup(Arx_html,'html.parser')
-#     title = Arx_content.find('h1',{'class':"ltx_title ltx_title_document"}).get_text(strip=True)
-#     authors_section = Arx_content.find('div', {'class': 'ltx_authors'})
-#     authors_raw= [author.get_text().strip() for author in authors_section.find_all('span',{'class':"ltx_personname"})]
-#     authors = format_authors(authors_raw)
-#     abstract_section = Arx_content.find('div', {'class':"ltx_abstract"})
-#     abstract = abstract_section.find('h6', {'class': 'ltx_title_abstract'}).find_next('p').get_text(strip=True)
-#     pdf_link_element = Arx_content.find('a', class_='ar5iv-footer-button')
-#     pdf_link = pdf_link_element['href'] if pdf_link_element else url.replace('/html/', '/pdf/') + '.pdf'
-#     return title, authors, abstract, pdf_link
-
 
 def scrape_arxv(url):
     """
@@ -53,18 +39,12 @@ def scrape_arxv(url):
     
     Returns: title, authors, abstract, pdf_link
     """
-    # Extract identifier
+    # extract identifier
     identifier = url.split('/')[-1]
-    
-    # Use canonical abstract page
     abs_url = f"https://arxiv.org/abs/{identifier}"
-    
     # PDF URL can be generated directly
     pdf_link = f"https://arxiv.org/pdf/{identifier}.pdf"
     
-    # Fetch the abstract page
-    #resp = requests.get(abs_url)
-    #soup = BeautifulSoup(resp.text, 'html.parser')
     Arxv_html = requests.get(abs_url).content
     Arxv_content = BeautifulSoup(Arxv_html,'html.parser')
     title = Arxv_content.find('h1',{'class':"title mathjax"}).get_text(strip=True)
@@ -73,8 +53,6 @@ def scrape_arxv(url):
     authors = format_authors(authors_raw)
     abstract_block = Arxv_content.find('blockquote', class_='abstract')
     abstract = abstract_block.get_text(strip=True).replace('Abstract:', '').strip()
-    #pdf = Arxv_content.find('a', class_='abs-button download-pdf')['href']
-    #pdf_link = "https://arxiv.org" + pdf
     return title, authors, abstract, pdf_link
     
 def scrape_neurips(url):
@@ -122,7 +100,7 @@ def create_github_paper_issue(paper_url: str, reason: str = "", body: str | None
     except Exception as e:
         raise click.ClickException(f"Error scraping paper: {e}")
 
-    # Normalize authors for display
+    # cleaning authors for display
     if isinstance(authors, list):
         authors_str = ", ".join(a.strip() for a in authors if a and str(a).strip())
     else:
