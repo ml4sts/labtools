@@ -14,6 +14,8 @@ from .accountability import issues_to_checklist, generate_basic_acc_issue
 from .accountability import file_generator, load_and_fill_template
 from .accountability import initialize_accountability_repo, file_split
 
+from .articles import paperinfos , create_github_issue_raw
+
 @click.group()
 def lab():
     '''
@@ -182,3 +184,71 @@ def news(slug, date, title, inline):
     '''
     create_new_lab_news(slug, date, title, inline)
 
+
+
+# article scrapper tool
+
+@lab.group()
+def articles():
+    """Tools for scraping research articles and creating issues."""
+    pass
+
+
+@articles.command("issue")
+@click.option('-p', '--paper-url', prompt="Enter the paper URL (ACM or NeurIPS)", help='Enter the paper URL (ACM or NeurIPS)')
+@click.option('-r', '--reason', prompt="Why should we read this paper?", default='', help='Why should we read this paper?')
+def articles_issue(paper_url, reason):
+    """Scrape ACM/NeurIPS and create an issue in the reading-group repo."""
+    
+    title, authors, abstract, pdf_link = paperinfos(paper_url)
+    
+    paper_link = f"[paper]({paper_url})"
+    extra_links = ""  
+    abstract_quoted = "\n".join(["> " + line for line in abstract.splitlines() if line.strip()]) or f"> {abstract}"
+    
+    # Load and fill Markdown issue body
+    md_template = load_template_file("article_issue_template.md")
+    issue_body = md_template.format(
+        title=title,
+        paper_link=paper_link,
+        extra_links=extra_links,
+        reason=reason,
+        abstract_quoted=abstract_quoted,
+        )
+    issue_title = f"Paper to read: {title}"
+    ok, msg = create_github_issue_raw(
+    title=f"Paper to read: {title}",
+    body=issue_body,
+    repo=None  
+    )
+    if not ok:
+       raise click.ClickException(msg)
+    click.echo(msg)
+
+@articles.command()
+@click.argument('path', default='.')
+
+def init(path):
+    """
+    Initialize an articles repo at PATH (default current dir)
+    """
+    # Create .github/workflows directory
+    os.makedirs(os.path.join(path, '.github', 'workflows'), exist_ok=True)
+    # write the template for issues to .github/ISSUE_TEMPLATE
+    os.makedirs(os.path.join(path,'.github','ISSUE_TEMPLATE'),exist_ok=True)
+    
+    # Write workflow file from template
+    workflow_action = load_template_file('create_article_issue.yml')
+    workflow_path = os.path.join(path, '.github', 'workflows', 'create_article_issue.yml')
+    with open(workflow_path, 'w', encoding='utf-8') as f:
+        f.write(workflow_action)
+        
+    # create issue using the template in the reading repo
+    issue_form = load_template_file('paper.yml')  
+    with open(os.path.join(path, '.github', 'ISSUE_TEMPLATE', 'paper.yml'), 'w', encoding='utf-8') as f:
+        f.write(issue_form)
+        
+    # Add .gitignore
+    git_ignore = load_template_file('gitignore.txt')
+    with open(os.path.join(path, '.gitignore'), 'w', encoding='utf-8') as f:
+        f.write(git_ignore)

@@ -1,0 +1,40 @@
+name: Create Issue with Scraped Paper Info
+
+on:
+  workflow_dispatch:
+    inputs:
+      paper_url:
+        description: "Enter the paper URL (Arxviv or NeurIPS)"
+        required: true
+      reason:
+        description: "Why should we read this paper?"
+        required: false 
+        
+permissions:
+  contents: read
+  issues: write
+  
+jobs:
+  create-issue:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install labtools
+        run: |
+          pip install git+http://github.com/ml4sts/labtools.git
+
+      - name: Create issue 
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          lab articles issue "${{ github.event.inputs.paper_url }}" \
+            --reason "${{ github.event.inputs.reason }}" \
+            --repo "${{ github.repository }}"
